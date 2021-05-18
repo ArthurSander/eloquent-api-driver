@@ -14,5 +14,10 @@
             "name": "Arthur Sander",
             "email": "arthur.sanderj@gmail.com"
         }
-    ]
+    ],
+    "autoload": {
+        "psr-4": {
+            "ArthurSander\\Drivers\\Api": "src"
+        }
+    }
 }
