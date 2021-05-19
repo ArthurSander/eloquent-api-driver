@@ -13,7 +13,7 @@ class ApiConnection
 
   protected AuthenticationProvider $authenticationProvider;
 
-  protected ?array $headers;
+  protected ?array $headers = null;
 
   public function __construct(RouteProvider $routeProvider, AuthenticationProvider $authenticationProvider)
   {
