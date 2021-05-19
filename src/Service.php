@@ -167,7 +167,7 @@ class Service
       return false;
     }
 
-    if($response->code > 199 && $response->code < 300) {
+    if($response->code < 199 || $response->code > 300) {
       return false;
     }
 

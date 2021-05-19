@@ -117,7 +117,7 @@ class ApiConnection
       $request->addHeaders($this->headers);
     }
 
-    return $request;
+    return $this->authenticationProvider->setHeader($request);
   }
 
   private function send(Request $request): Response

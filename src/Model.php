@@ -10,6 +10,7 @@ use ArthurSander\Drivers\Api\Enums\ConnectionTypes;
 use ArthurSander\Drivers\Api\Routes\DefaultRouteProvider;
 use ArthurSander\Drivers\Api\Transformers\DefaultModelTransformer;
 use ArthurSander\Drivers\Api\Transformers\DefaultRequestTransformer;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 
 abstract class Model extends \Illuminate\Database\Eloquent\Model
@@ -55,13 +56,13 @@ abstract class Model extends \Illuminate\Database\Eloquent\Model
     return parent::query()->find($id);
   }
 
-  public static function findOneBy(array $params = []): Collection
+  public static function findOneBy(array $params = []): ?Model
   {
     switch ((new static)->connectionType) {
       case ConnectionTypes::DATABASE:
-        return self::dbFindBy($params)->first();
+        return self::dbPrepareQueryFindBy($params)->first();
       case ConnectionTypes::API:
-        return collect(self::getService()->findOneBy($params));
+        return self::getService()->findOneBy($params);
     }
     return self::dbFindBy($params)->first();
   }
@@ -70,7 +71,7 @@ abstract class Model extends \Illuminate\Database\Eloquent\Model
   {
     switch ((new static)->connectionType) {
       case ConnectionTypes::DATABASE:
-        return self::dbFindBy($params);
+        return self::dbPrepareQueryFindBy($params)->get();
       case ConnectionTypes::API:
         return collect(self::getService()->findOneBy($params));
     }
@@ -123,13 +124,13 @@ abstract class Model extends \Illuminate\Database\Eloquent\Model
     return new DefaultRouteProvider($this);
   }
 
-  protected static function dbFindBy(array $params): Collection
+  protected static function dbPrepareQueryFindBy(array $params): Builder
   {
     $query = parent::query();
     foreach ($params as $key => $value){
       $query->where($key, '=', $value);
     }
-    return $query->get();
+    return $query;
   }
 
 }
