@@ -2,7 +2,7 @@
 
 namespace ArthurSander\Drivers\Api\Enums;
 
-class ConnectionTypesEnum
+class ConnectionTypes
 {
   public const DATABASE = 'DB';
   public const API = 'API';
