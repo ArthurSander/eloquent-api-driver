@@ -3,9 +3,11 @@
     "description": "Additional Eloquent Driver for Web APIs",
     "type": "library",
     "require": {
-        "php": "7.4|^8.0",
+        "php": "^7.4|^8.0",
         "illuminate/database": "^8.41",
-        "nategood/httpful": "^0.3.2"
+        "nategood/httpful": "^0.3.2",
+        "guzzlehttp/guzzle": "^6.5|^7.0.1",
+        "swisnl/json-api-client": "^1.3"
     },
     "license": "MIT",
     "authors": [
