@@ -12,6 +12,7 @@ use ArthurSander\Drivers\Api\Transformers\DefaultModelTransformer;
 use ArthurSander\Drivers\Api\Transformers\DefaultRequestTransformer;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
+use Swis\JsonApi\Client\Interfaces\ItemDocumentInterface;
 
 abstract class Model extends \Illuminate\Database\Eloquent\Model
 {

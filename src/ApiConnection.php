@@ -7,6 +7,10 @@ use ArthurSander\Drivers\Api\Contracts\RouteProvider;
 use Httpful\Request;
 use Httpful\Response;
 use Swis\JsonApi\Client\DocumentClient;
+use Swis\JsonApi\Client\DocumentFactory;
+use Swis\JsonApi\Client\Item;
+use Swis\JsonApi\Client\ItemDocument;
+use Swis\JsonApi\Client\ItemHydrator;
 
 class ApiConnection
 {
@@ -63,8 +67,11 @@ class ApiConnection
 
   public function updateAsPatch(string $id, array $attributes): array
   {
-    $request = Request::patch($this->routeProvider->update($id), $attributes);
-    return $this->send($request);
+    $item = (new ItemDocument())->setData((new Item($attributes))->setId($id));
+
+    $result = $this->client->patch($this->routeProvider->update($id), $item, $this->authenticationProvider->getHeader());
+
+    return $result->getData()->toJsonApiArray();
   }
 
   public function delete(string $id): array
