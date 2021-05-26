@@ -33,7 +33,7 @@ class ApiConnection
 
   public function findBy(array $params = []): array
   {
-    $request = Request::get($this->routeProvider->findBy($params));
+    $request = Request::get($this->routeProvider->findBy($params), $this->authenticationProvider->getHeader());
     return $this->send($request);
   }
 

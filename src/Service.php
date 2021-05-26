@@ -138,6 +138,12 @@ class Service
     $this->requestTransformer = $requestTransformer;
   }
 
+  public function addHeader(string $key, string $value): Service
+  {
+    $this->connection->addHeader($key, $value);
+    return $this;
+  }
+
   private function verifyIntegrity(): void
   {
     if(blank($this->model)){
