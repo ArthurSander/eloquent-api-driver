@@ -28,7 +28,7 @@ class ApiConnection
   public function find(string $id): array
   {
     $result = $this->client->get($this->routeProvider->find($id), $this->authenticationProvider->getHeader());
-    return $result->toArray();
+    return $result->getData()->toJsonApiArray();
   }
 
   public function findBy(array $params = []): array

@@ -16,6 +16,10 @@ class DefaultModelTransformer implements ModelTransformer
 
   public function transform(mixed $result): Model
   {
+    $result = array_merge([
+      'id' => data_get($result,'id', null)
+    ], data_get($result, 'attributes', []));
+
     return $this->model->newInstance($result);
   }
 
