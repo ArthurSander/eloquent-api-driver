@@ -6,6 +6,7 @@ use ArthurSander\Drivers\Api\Contracts\AuthenticationProvider;
 use ArthurSander\Drivers\Api\Contracts\RouteProvider;
 use Httpful\Request;
 use Httpful\Response;
+use Swis\JsonApi\Client\DocumentClient;
 
 class ApiConnection
 {
@@ -13,57 +14,60 @@ class ApiConnection
 
   protected AuthenticationProvider $authenticationProvider;
 
+  protected ?DocumentClient $client;
+
   protected ?array $headers = null;
 
   public function __construct(RouteProvider $routeProvider, AuthenticationProvider $authenticationProvider)
   {
     $this->routeProvider = $routeProvider;
     $this->authenticationProvider = $authenticationProvider;
+    $this->client = DocumentClient::create();
   }
 
-  public function find(string $id): Response
+  public function find(string $id): array
   {
-    $request = Request::get($this->routeProvider->find($id));
-    return $this->send($request);
+    $result = $this->client->get($this->routeProvider->find($id));
+    return $result->toArray();
   }
 
-  public function findBy(array $params = []): Response
+  public function findBy(array $params = []): array
   {
     $request = Request::get($this->routeProvider->findBy($params));
     return $this->send($request);
   }
 
-  public function findOneBy(array $params = []): Response
+  public function findOneBy(array $params = []): array
   {
     $request = Request::get($this->routeProvider->findOneBy($params));
     return $this->send($request);
   }
 
-  public function all(): Response
+  public function all(): array
   {
     $request = Request::get($this->routeProvider->all());
     return $this->send($request);
   }
 
-  public function create(array $attributes): Response
+  public function create(array $attributes): array
   {
     $request = Request::post($this->routeProvider->create(), $attributes);
     return $this->send($request);
   }
 
-  public function updateAsPut(string $id, array $attributes): Response
+  public function updateAsPut(string $id, array $attributes): array
   {
     $request = Request::put($this->routeProvider->update($id), $attributes);
     return $this->send($request);
   }
 
-  public function updateAsPatch(string $id, array $attributes): Response
+  public function updateAsPatch(string $id, array $attributes): array
   {
     $request = Request::patch($this->routeProvider->update($id), $attributes);
     return $this->send($request);
   }
 
-  public function delete(string $id): Response
+  public function delete(string $id): array
   {
     $request = Request::delete($this->routeProvider->update($id));
     return $this->send($request);
@@ -120,7 +124,7 @@ class ApiConnection
     return $this->authenticationProvider->setHeader($request);
   }
 
-  private function send(Request $request): Response
+  private function send(Request $request): array
   {
     $request = $this->prepareRequestHeaders($request);
     return $request->send();

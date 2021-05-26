@@ -27,11 +27,7 @@ class Service
 
     $result = $this->connection->find($id);
 
-    if(!$this->wasSuccessful($result, false)){
-      return null;
-    }
-
-    return $this->modelTransformer->transform($result->body);
+    return $this->modelTransformer->transform($result);
   }
 
   /**
