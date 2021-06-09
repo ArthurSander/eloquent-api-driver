@@ -119,6 +119,7 @@ class DefaultApiConnection implements ApiConnection
 
   protected function getHeadersForRequest(): array
   {
+    $this->assureHeadersNotNull();
     return array_merge($this->headers, $this->authenticationProvider->getHeader());
   }
 
