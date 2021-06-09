@@ -2,8 +2,12 @@
 
 namespace ArthurSander\Drivers\Api;
 
+use ArthurSander\Drivers\Api\Authentication\AuthenticationProviderFactory;
+use ArthurSander\Drivers\Api\Builders\ApiServiceBuilder;
+use ArthurSander\Drivers\Api\Builders\DefaultConnectionBuilder;
+use ArthurSander\Drivers\Api\Contracts\ConnectionBuilder;
 use ArthurSander\Drivers\Api\Contracts\ModelTransformer;
-use ArthurSander\Drivers\Api\Contracts\RequestModelTransformer;
+use ArthurSander\Drivers\Api\Contracts\RequestTransformer;
 use ArthurSander\Drivers\Api\Contracts\RouteProvider;
 use ArthurSander\Drivers\Api\Enums\AuthenticationTypes;
 use ArthurSander\Drivers\Api\Enums\ConnectionTypes;
@@ -99,7 +103,6 @@ abstract class Model extends \Illuminate\Database\Eloquent\Model
         return self::getService($this)->delete();
     }
     return parent::delete();
-
   }
 
   protected static function getService(?Model $model = null): Service
@@ -115,7 +118,7 @@ abstract class Model extends \Illuminate\Database\Eloquent\Model
     return new DefaultModelTransformer((new static));
   }
 
-  public function getRequestTransformer(): RequestModelTransformer
+  public function getRequestTransformer(): RequestTransformer
   {
     return new DefaultRequestTransformer();
   }
@@ -123,6 +126,15 @@ abstract class Model extends \Illuminate\Database\Eloquent\Model
   public function getRouteProvider(): RouteProvider
   {
     return new DefaultRouteProvider($this);
+  }
+
+  public function getApiConnectionBuilder(): ConnectionBuilder
+  {
+    return new DefaultConnectionBuilder(
+      $this->getRouteProvider(),
+      $this->getTransformer(),
+      (new AuthenticationProviderFactory())->create($this)
+    );
   }
 
   protected static function dbPrepareQueryFindBy(array $params): Builder

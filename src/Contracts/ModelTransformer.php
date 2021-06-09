@@ -6,13 +6,14 @@ use ArthurSander\Drivers\Api\Model;
 
 interface ModelTransformer
 {
+
   /**
    * @param mixed $result
    * @return Model
    *
    * Should transform the result into a model
    */
-  public function transform(mixed $result): Model;
+  public function transform(array $response): ?Model;
 
   /**
    * @param mixed $result
@@ -20,5 +21,6 @@ interface ModelTransformer
    *
    * Should transform the result into multiple models
    */
-  public function transformMultiple(mixed $result): array;
+  public function transformMultiple(array $response): ?array;
+
 }

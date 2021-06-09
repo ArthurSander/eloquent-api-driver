@@ -1,9 +1,12 @@
 <?php
 
-namespace ArthurSander\Drivers\Api;
+namespace ArthurSander\Drivers\Api\Builders;
 
 use ArthurSander\Drivers\Api\Authentication\AuthenticationProviderFactory;
+use ArthurSander\Drivers\Api\Contracts\ApiConnection;
 use ArthurSander\Drivers\Api\Contracts\ServiceBuilder;
+use ArthurSander\Drivers\Api\Model;
+use ArthurSander\Drivers\Api\Service;
 
 class ApiServiceBuilder implements ServiceBuilder
 {
@@ -21,7 +24,7 @@ class ApiServiceBuilder implements ServiceBuilder
     $service = new Service();
 
     $service->setModel($this->model);
-    $service->setConnection(new ApiConnection($this->model->getRouteProvider(), $this->authenticationProviderFactory->create($this->model)));
+    $service->setConnection($this->model->getApiConnectionBuilder()->build());
     $service->setModelTransformer($this->model->getTransformer());
     $service->setRequestTransformer($this->model->getRequestTransformer());
 

@@ -2,9 +2,9 @@
 
 namespace ArthurSander\Drivers\Api;
 
+use ArthurSander\Drivers\Api\Contracts\ApiConnection;
 use ArthurSander\Drivers\Api\Contracts\ModelTransformer;
-use ArthurSander\Drivers\Api\Contracts\RequestModelTransformer;
-use Httpful\Response;
+use ArthurSander\Drivers\Api\Contracts\RequestTransformer;
 
 class Service
 {
@@ -14,7 +14,7 @@ class Service
 
   private ModelTransformer $modelTransformer;
 
-  private RequestModelTransformer $requestTransformer;
+  private RequestTransformer $requestTransformer;
 
   /**
    * @param string $id
@@ -40,11 +40,7 @@ class Service
 
     $result = $this->connection->findBy($params);
 
-    if(!$this->wasSuccessful($result, false)){
-      return [];
-    }
-
-    return $this->modelTransformer->transformMultiple($result->body);
+    return $this->modelTransformer->transformMultiple($result);
   }
 
   public function findOneBy(array $params): ?Model
@@ -52,10 +48,6 @@ class Service
     $this->verifyIntegrity();
 
     $result = $this->connection->findOneBy($params);
-
-    if(!$this->wasSuccessful($result, false)){
-      return null;
-    }
 
     return $this->modelTransformer->transform(data_get($result, 0));
   }
@@ -69,11 +61,7 @@ class Service
 
     $result = $this->connection->all();
 
-    if(!$this->wasSuccessful($result, false)){
-      return [];
-    }
-
-    return $this->modelTransformer->transformMultiple($result->body);
+    return $this->modelTransformer->transformMultiple($result);
   }
 
   public function save()
@@ -81,10 +69,6 @@ class Service
     $this->verifyIntegrity();
 
     $result = $this->createOrUpdate();
-
-    if(!$this->wasSuccessful($result, false)){
-      return null;
-    }
 
     return $this->modelTransformer->transform($result);
   }
@@ -97,11 +81,7 @@ class Service
       return false;
     }
 
-    $result = $this->connection->delete($this->model->getKey());
-
-    if(!$this->wasSuccessful($result, false)){
-      return false;
-    }
+    $this->connection->delete($this->model->getKey());
 
     return true;
   }
@@ -131,9 +111,9 @@ class Service
   }
 
   /**
-   * @param RequestModelTransformer $requestTransformer
+   * @param RequestTransformer $requestTransformer
    */
-  public function setRequestTransformer(RequestModelTransformer $requestTransformer): void
+  public function setRequestTransformer(RequestTransformer $requestTransformer): void
   {
     $this->requestTransformer = $requestTransformer;
   }
@@ -163,33 +143,20 @@ class Service
     }
   }
 
-  private function wasSuccessful(Response $response, bool $nullable = true): bool
-  {
-    if(!$nullable && blank($response->raw_body)){
-      return false;
-    }
-
-    if($response->code < 199 || $response->code > 300) {
-      return false;
-    }
-
-    return true;
-  }
-
-  private function createOrUpdate(): Response
+  private function createOrUpdate(): array
   {
     return blank($this->model->getKey()) ?
       $this->create() :
       $this->udpate();
   }
 
-  private function create(): Response
+  private function create(): array
   {
     $attributes = $this->requestTransformer->transform($this->model);
     return $this->connection->create($attributes);
   }
 
-  private function udpate(): Response
+  private function udpate(): array
   {
     $attributes = $this->requestTransformer->transform($this->model);
     return $this->connection->updateAsPatch(strval($this->model->getKey()), $attributes);
