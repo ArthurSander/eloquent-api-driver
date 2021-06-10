@@ -61,21 +61,21 @@ class DefaultApiConnection implements ApiConnection
 
   public function create(array $attributes): ConnectionResponse
   {
-    $request = Request::post($this->routeProvider->create(), $attributes);
+    $request = Request::post($this->routeProvider->create(), json_encode($attributes));
     $result = $this->send($request);
     return $this->getBasicApiResponse($result);
   }
 
   public function updateAsPut(string $id, array $attributes): ConnectionResponse
   {
-    $request = Request::put($this->routeProvider->update($id), $attributes);
+    $request = Request::put($this->routeProvider->update($id), json_encode($attributes));
     $result = $this->send($request);
     return $this->getBasicApiResponse($result);
   }
 
   public function updateAsPatch(string $id, array $attributes): ConnectionResponse
   {
-    $request = Request::patch($this->routeProvider->update($id), $attributes);
+    $request = Request::patch($this->routeProvider->update($id), json_encode($attributes));
     $result = $this->send($request);
     return $this->getBasicApiResponse($result);
   }

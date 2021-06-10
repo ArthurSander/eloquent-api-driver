@@ -20,7 +20,7 @@ class BasicApiResponse implements ConnectionResponse
 
   public function getBody(): ?array
   {
-    return $this->response->body;
+    return (array)$this->response->body;
   }
 
   public function getRawBody(): ?string

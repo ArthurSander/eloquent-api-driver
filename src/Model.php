@@ -89,7 +89,9 @@ abstract class Model extends \Illuminate\Database\Eloquent\Model
       case ConnectionTypes::DATABASE:
         return parent::save($options);
       case ConnectionTypes::API:
-        return self::getService($this)->save();
+        $result = self::getService($this)->save();
+        $this->attributes = $result->attributes;
+        return $result;
     }
     return parent::save($options);
   }
@@ -145,5 +147,7 @@ abstract class Model extends \Illuminate\Database\Eloquent\Model
     }
     return $query;
   }
+
+
 
 }

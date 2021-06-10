@@ -27,20 +27,20 @@ class Service
 
     $result = $this->connection->find($id);
 
-    return $this->modelTransformer->transform($result);
+    return $result->getModel();
   }
 
   /**
    * @param string $id
    * @return Model[]
    */
-  public function findBy(array $params): array
+  public function findBy(array $params): ?Model
   {
     $this->verifyIntegrity();
 
     $result = $this->connection->findBy($params);
 
-    return $this->modelTransformer->transformMultiple($result);
+    return $result->getModel();
   }
 
   public function findOneBy(array $params): ?Model
@@ -49,7 +49,7 @@ class Service
 
     $result = $this->connection->findOneBy($params);
 
-    return $this->modelTransformer->transform(data_get($result, 0));
+    return $result->getModel();
   }
 
   /**
@@ -61,16 +61,14 @@ class Service
 
     $result = $this->connection->all();
 
-    return $this->modelTransformer->transformMultiple($result);
+    return $result->getModels();
   }
 
-  public function save()
+  public function save(): ?Model
   {
     $this->verifyIntegrity();
 
-    $result = $this->createOrUpdate();
-
-    return $this->modelTransformer->transform($result);
+    return $this->createOrUpdate();
   }
 
   public function delete(): bool
@@ -143,22 +141,22 @@ class Service
     }
   }
 
-  private function createOrUpdate(): array
+  private function createOrUpdate(): ?Model
   {
     return blank($this->model->getKey()) ?
       $this->create() :
       $this->udpate();
   }
 
-  private function create(): array
+  private function create(): ?Model
   {
     $attributes = $this->requestTransformer->transform($this->model);
-    return $this->connection->create($attributes);
+    return $this->connection->create($attributes)->getModel();
   }
 
-  private function udpate(): array
+  private function udpate(): ?Model
   {
     $attributes = $this->requestTransformer->transform($this->model);
-    return $this->connection->updateAsPatch(strval($this->model->getKey()), $attributes);
+    return $this->connection->updateAsPatch(strval($this->model->getKey()), $attributes)->getModel();
   }
 }
