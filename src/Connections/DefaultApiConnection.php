@@ -130,7 +130,9 @@ class DefaultApiConnection implements ApiConnection
   protected function assureHeadersNotNull(): void
   {
     if(is_null($this->headers)){
-      $this->headers = [];
+      $this->headers = [
+        'accept' => 'application/json'
+      ];
     }
   }
 
