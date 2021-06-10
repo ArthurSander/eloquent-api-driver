@@ -65,6 +65,9 @@ class JsonApiResponse implements ConnectionResponse
 
   private function transformToModel(array $rawModelData): ?Model
   {
-    return $this->transformer->transform($rawModelData);
+    $attributes = array_merge([
+      'id' => data_get($rawModelData,'id', null)
+    ], (array)data_get($rawModelData, 'attributes', []));
+    return $this->transformer->transform($attributes);
   }
 }

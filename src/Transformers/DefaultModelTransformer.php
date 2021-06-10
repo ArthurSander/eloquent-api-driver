@@ -14,16 +14,12 @@ class DefaultModelTransformer implements ModelTransformer
     $this->model = $model;
   }
 
-  public function transform(mixed $result): Model
+  public function transform(array $result): Model
   {
-    $attributes = array_merge([
-      'id' => data_get($result,'data.id', null)
-    ], (array)data_get($result, 'data.attributes', []));
-
-    return $this->model->newInstance($attributes);
+    return $this->model->newInstance($result);
   }
 
-  public function transformMultiple(mixed $result): array
+  public function transformMultiple(array $result): array
   {
     if(!is_array($result)){
       return [];

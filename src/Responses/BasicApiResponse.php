@@ -45,7 +45,7 @@ class BasicApiResponse implements ConnectionResponse
 
   public function getModel(): ?Model
   {
-    return $this->transformer->transform($this->getBody());
+    return $this->transformToModel(data_get($this->getBody(), 'data', []));
   }
 
   public function getErrors(): ?array
@@ -58,8 +58,17 @@ class BasicApiResponse implements ConnectionResponse
   {
     $models = [];
     foreach($this->getBody() as $arrModel){
-      $models[] = $this->transformer->transform($arrModel);
+      $models[] = $this->transformToModel($arrModel);
     }
     return $models;
+  }
+
+  private function transformToModel(array $result): ?Model
+  {
+    $attributes = array_merge([
+      'id' => data_get($result,'id', null)
+    ], (array)data_get($result, 'attributes', []));
+
+    return $this->transformer->transform($attributes);
   }
 }
