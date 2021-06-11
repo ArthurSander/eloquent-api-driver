@@ -148,6 +148,9 @@ abstract class Model extends \Illuminate\Database\Eloquent\Model
     return $query;
   }
 
-
+  public function getApiHeaders(): array
+  {
+    return [];
+  }
 
 }

@@ -116,9 +116,14 @@ class DefaultApiConnection implements ApiConnection
     }
   }
 
+  public function addHeaders(array $headers)
+  {
+    $this->headers = array_merge($this->headers, $headers);
+  }
+
   public function clearHeaders(): void
   {
-    $this->headers = null;
+    $this->headers = $this->getDefaultHeaders();
   }
 
   protected function getHeadersForRequest(): array
@@ -129,16 +134,16 @@ class DefaultApiConnection implements ApiConnection
 
   protected function assureHeadersNotNull(): void
   {
-    if(is_null($this->headers)){
-      $this->headers = [
-        'accept' => 'application/json'
-      ];
+    if(blank($this->headers)){
+      $this->headers = $this->getDefaultHeaders();
     }
   }
 
   private function send(Request $request): Response
   {
-    return $request->addHeaders($this->getHeadersForRequest())->send();
+    $result = $request->addHeaders($this->getHeadersForRequest())->send();
+    $this->finishRequest();
+    return $result;
   }
 
   private function getJsonApiResponse(DocumentInterface $result): JsonApiResponse
@@ -149,5 +154,17 @@ class DefaultApiConnection implements ApiConnection
   private function getBasicApiResponse(Response $result): BasicApiResponse
   {
     return new BasicApiResponse($result, $this->transformer);
+  }
+
+  protected function finishRequest(): void
+  {
+    $this->clearHeaders();
+  }
+
+  protected function getDefaultHeaders(): array
+  {
+    return [
+      'accept' => 'application/json'
+    ];
   }
 }
